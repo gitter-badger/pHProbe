@@ -1,11 +1,11 @@
 {
   "name": "pH Probe Interface",
   "keywords": "pH, hydroponics",
-  "description": "Measure pH",
+  "description": "Measure pH easily",
   "repository":
   {
     "type": "git",
-    "url": "https://github.com/u-fire/ECSalinity.git"
+    "url": "https://github.com/u-fire/pHProbe.git"
   },
   "authors":
   [

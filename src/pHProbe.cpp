@@ -45,7 +45,7 @@ pH_Probe::~pH_Probe()
 
 /*!
    \code
-   pH.measurepH();
+    pH_Probe::measurepH();
    \endcode
    \brief Starts a pH measurement.
    \return pH
@@ -55,15 +55,16 @@ float pH_Probe::measurepH()
   _send_command(PH_MEASURE_PH);
   delay(PH_PH_MEASURE_TIME);
   pH = _read_register(PH_PH_REGISTER);
-
+  mV = _read_register(PH_MV) * 1000;
   double places = pow(10.0, 2);
-  pH = round(pH * places) / places;
+  pH  = round(pH * places) / places;
+  pOH = abs(pH - 14);
   return pH;
 }
 
 /*!
    \code
-   pH.measureTemp();
+    pH_Probe::measureTemp();
    \endcode
    \brief Starts a temperature measurement
    \post #tempC and #tempF are updated
@@ -81,21 +82,26 @@ float pH_Probe::measureTemp()
 
 /*!
    \code
-   pH.calibrateZero();
+    pH_Probe::calibrateSingle(7.0);
    \endcode
-   \brief Determines zero-point of the pH probe.
+   \brief Calibrates the probe using a single point.
    \post result will be saved in the device's EEPROM and used
    automatically thereafter
  */
-void pH_Probe::calibrateZero()
+void pH_Probe::calibrateSingle(float solutionpH)
 {
-  _send_command(PH_CALIBRATE_ZERO);
+  bool dualpoint = usingDualPoint();
+
+  useDualPoint(false);
+  _write_register(PH_SOLUTION_REGISTER, solutionpH);
+  _send_command(PH_CALIBRATE_SINGLE);
   delay(PH_PH_MEASURE_TIME);
+  useDualPoint(dualpoint);
 }
 
 /*!
    \code
-   pH.calibrateProbeLow(4.0);
+    pH_Probe::calibrateProbeLow(4.0);
    \endcode
    \brief Calibrates the dual-point values for the low reading and saves them
    in the devices's EEPROM.
@@ -103,14 +109,18 @@ void pH_Probe::calibrateZero()
  */
 void pH_Probe::calibrateProbeLow(float solutionpH)
 {
+  bool dualpoint = usingDualPoint();
+
+  useDualPoint(false);
   _write_register(PH_SOLUTION_REGISTER, solutionpH);
   _send_command(PH_CALIBRATE_LOW);
   delay(PH_PH_MEASURE_TIME);
+  useDualPoint(dualpoint);
 }
 
 /*!
    \code
-   pH.calibrateProbeHigh(7.0);
+   pH_Probe::calibrateProbeHigh(7.0);
    \endcode
    \brief Calibrates the dual-point values for the high reading and saves them
    in the devices's EEPROM.
@@ -118,14 +128,18 @@ void pH_Probe::calibrateProbeLow(float solutionpH)
  */
 void pH_Probe::calibrateProbeHigh(float solutionpH)
 {
+  bool dualpoint = usingDualPoint();
+
+  useDualPoint(false);
   _write_register(PH_SOLUTION_REGISTER, solutionpH);
   _send_command(PH_CALIBRATE_HIGH);
   delay(PH_PH_MEASURE_TIME);
+  useDualPoint(dualpoint);
 }
 
 /*!
    \code
-   pH.setDualPointCalibration(4.0, 7.0, 3.8, 7.2);
+   pH_Probe::setDualPointCalibration(4.0, 7.0, 3.8, 7.2);
    \endcode
    \brief Sets all the values for dual point calibration and saves them
    in the devices's EEPROM.
@@ -147,22 +161,22 @@ void pH_Probe::setDualPointCalibration(float refLow,
 
 /*!
    \code
-   float z = pH.getZero();
+   float z = pH_Probe::getCalibrateOffset();
    \endcode
-   \brief Retrieves the zero-point offset from the device.
+   \brief Retrieves the single-point offset from the device.
    \return   the probe's offset
  */
-float pH_Probe::getZero()
+float pH_Probe::getCalibrateOffset()
 {
-  return _read_register(PH_CALIBRATE_ZERO_REGISTER);
+  return _read_register(PH_CALIBRATE_SINGLE_REGISTER);
 }
 
 /*!
    \code
-   float calHigh = pH.getCalibrateHigh();
+   float calHigh = pH_Probe::getCalibrateHigh();
    \endcode
-   \brief Retrieves the dual-point calibration high value
-   \return   the dual-point calibration high value
+   \brief Retrieves the reference-high calibration data
+   \return   the reference-high
  */
 float pH_Probe::getCalibrateHigh()
 {
@@ -171,10 +185,22 @@ float pH_Probe::getCalibrateHigh()
 
 /*!
    \code
-   float calLow = pH.getCalibrateLow();
+   float calHigh = pH_Probe::getCalibrateHighReading();
    \endcode
-   \brief Retrieves the dual-point calibration low value
-   \return   the dual-point calibration low value
+   \brief Retrieves the reading-high calibration data
+   \return   the reading-high
+ */
+float pH_Probe::getCalibrateHighReading()
+{
+  return _read_register(PH_CALIBRATE_READHIGH_REGISTER);
+}
+
+/*!
+   \code
+   float calLow = pH_Probe::getCalibrateLow();
+   \endcode
+   \brief Retrieves the reference-low calibration data
+   \return   the reference-low
  */
 float pH_Probe::getCalibrateLow()
 {
@@ -183,7 +209,19 @@ float pH_Probe::getCalibrateLow()
 
 /*!
    \code
-   pH.useTemperatureCompensation(true);
+   float calLow = pH_Probe::getCalibrateLowReading();
+   \endcode
+   \brief Retrieves the reference-low calibration data
+   \return   the reading-low
+ */
+float pH_Probe::getCalibrateLowReading()
+{
+  return _read_register(PH_CALIBRATE_READLOW_REGISTER);
+}
+
+/*!
+   \code
+   pH_Probe::useTemperatureCompensation(true);
    \endcode
    \brief Configures device to use temperature compensation or not
    \param b   true for false
@@ -207,7 +245,7 @@ void pH_Probe::useTemperatureCompensation(bool b)
 
 /*!
    \code
-   pH.useDualPoint(true);
+   pH_Probe::useDualPoint(true);
    \endcode
    \brief Configures device to use dual-point calibration
    \param b   true or false
@@ -232,7 +270,7 @@ void pH_Probe::useDualPoint(bool b)
 
 /*!
    \code
-   byte version = pH.getVersion();
+   byte version = pH_Probe::getVersion();
    \endcode
    \brief Retrieves the firmware version of the device
    \return   version of firmware
@@ -243,8 +281,20 @@ byte pH_Probe::getVersion()
 }
 
 /*!
+   \brief Resets all the stored calibration information.
+ */
+void pH_Probe::reset()
+{
+  _write_register(PH_CALIBRATE_SINGLE_REGISTER,   NAN);
+  _write_register(PH_CALIBRATE_REFHIGH_REGISTER,  NAN);
+  _write_register(PH_CALIBRATE_REFLOW_REGISTER,   NAN);
+  _write_register(PH_CALIBRATE_READHIGH_REGISTER, NAN);
+  _write_register(PH_CALIBRATE_READLOW_REGISTER,  NAN);
+}
+
+/*!
    \code
-   pH.setTempConstant(25);
+   pH_Probe::setTempConstant(25);
    \endcode
    \brief Configures device to use the provided temperature constant
 
@@ -257,7 +307,7 @@ void pH_Probe::setTempConstant(byte b)
 
 /*!
    \code
-   byte temp = pH.getTempConstant();
+   byte temp = pH_Probe::getTempConstant();
    \endcode
    \brief Retrieves the temperature constant
    \return   the temperature to used for compensation
@@ -269,7 +319,7 @@ byte pH_Probe::getTempConstant()
 
 /*!
    \code
-   bool usingTemp = pH.usingTemperatureCompensation();
+   bool usingTemp = pH_Probe::usingTemperatureCompensation();
    \endcode
    \brief Determines if temperature compensation is being used
    \return   true if using compensation, false otherwise
@@ -283,7 +333,7 @@ bool pH_Probe::usingTemperatureCompensation()
 
 /*!
    \code
-   bool usingTemp = pH.usingDualPoint();
+   bool usingTemp = pH_Probe::usingDualPoint();
    \endcode
    \brief Determines if dual point calibration is being used
    \return   true if using compensation, false otherwise

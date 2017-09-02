@@ -23,8 +23,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /*!
-   \file ECSalinity.h
-   \brief EC_Salinity Class Implementation
+   \file pHProbe.h
+   \brief phProbe Class Implementation
  */
 
 #ifndef PHPROBE_H
@@ -32,28 +32,29 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-#define PH_PROBE 0x13 /*!< pH probe I2C address */
+#define PH_PROBE 0x47 /*!< pH probe I2C address */
 #define PH_MEASURE_PH 80
 #define PH_MEASURE_TEMP 40
-#define PH_CALIBRATE_ZERO 20
+#define PH_CALIBRATE_SINGLE 20
 #define PH_CALIBRATE_LOW 10
 #define PH_CALIBRATE_HIGH 8
 
 #define PH_VERSION_REGISTER 0             /*!< version */
 #define PH_PH_REGISTER 1                  /*!< pH */
 #define PH_TEMP_REGISTER 5                /*!< temperature in C */
-#define PH_CALIBRATE_ZERO_REGISTER 9      /*!< zero offset */
+#define PH_CALIBRATE_SINGLE_REGISTER 9    /*!< calibration offset */
 #define PH_CALIBRATE_REFHIGH_REGISTER 13  /*!< reference high calibration */
 #define PH_CALIBRATE_REFLOW_REGISTER 17   /*!< reference low calibration */
 #define PH_CALIBRATE_READHIGH_REGISTER 21 /*!< reading high calibration */
 #define PH_CALIBRATE_READLOW_REGISTER 25  /*!< reading low calibration */
 #define PH_SOLUTION_REGISTER  29          /*!< reference pH solution */
 #define PH_TEMP_COMPENSATION_REGISTER 33  /*!< temperature compensation constant */
-#define PH_CONFIG_REGISTER 34             /*!< config register */
-#define PH_TASK_REGISTER 35               /*!< task register */
+#define PH_MV 34                          /*!< measured mV from pH probe */
+#define PH_CONFIG_REGISTER 38             /*!< config register */
+#define PH_TASK_REGISTER 39               /*!< task register */
 
 #define PH_TEMP_MEASURE_TIME 750
-#define PH_PH_MEASURE_TIME 11000
+#define PH_PH_MEASURE_TIME 12000
 
 #define PH_DUALPOINT_CONFIG_BIT 0         /*!< dual point config bit */
 #define PH_TEMP_COMPENSATION_CONFIG_BIT 1 /*!< temperature compensation config bit */
@@ -65,18 +66,20 @@ public:
   float pH;    /*!< pH */
   float tempC; /*!< Temperature in C */
   float tempF; /*!< Temperature in F */
+  float mV;    /*!< mV of probe */
+  float pOH;   /*!< pOH */
   pH_Probe();
   ~pH_Probe();
   float measurepH();
   float measureTemp();
-  void  calibrateZero();
+  void  calibrateSingle(float solutionpH);
   void  calibrateProbeLow(float solutionpH);
   void  calibrateProbeHigh(float solutionpH);
   void  setDualPointCalibration(float refLow,
                                 float refHigh,
                                 float readLow,
                                 float readHigh);
-  float getZero();
+  float getCalibrateOffset();
   void  setTempConstant(byte b);
   byte  getTempConstant();
   void  useTemperatureCompensation(bool b);
@@ -85,7 +88,10 @@ public:
   bool  usingDualPoint();
   float getCalibrateHigh();
   float getCalibrateLow();
+  float getCalibrateHighReading();
+  float getCalibrateLowReading();
   byte  getVersion();
+  void  reset();
 
 private:
 
