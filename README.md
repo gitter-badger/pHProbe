@@ -1,3 +1,6 @@
+[![GitHub release](https://img.shields.io/github/release/u-fire/pHProbe.svg)]()
+[![Codacy grade](https://img.shields.io/codacy/grade/5a3eff9c5b7c49c5ba03cbe2b4435c3e.svg)]()
+
 ### pH Probe Interface
 
 > Measure pH easily

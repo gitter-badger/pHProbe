@@ -55,9 +55,9 @@ float pH_Probe::measurepH()
   _send_command(PH_MEASURE_PH);
   delay(PH_PH_MEASURE_TIME);
   pH = _read_register(PH_PH_REGISTER);
-  mV = _read_register(PH_MV) * 1000;
-  double places = pow(10.0, 2);
-  pH  = round(pH * places) / places;
+  mV = _read_register(PH_MV_REGISTER) * 1000;
+
+  pH  = round(pH * 100.0) / 100.0;
   pOH = abs(pH - 14);
   return pH;
 }
@@ -229,16 +229,15 @@ float pH_Probe::getCalibrateLowReading()
 void pH_Probe::useTemperatureCompensation(bool b)
 {
   byte retval;
-
-  retval = _read_byte(PH_CONFIG_REGISTER);
+  byte config = _read_byte(PH_CONFIG_REGISTER);
 
   if (b)
   {
-    retval = bitSet(retval, PH_TEMP_COMPENSATION_CONFIG_BIT);
+    retval = bitSet(config, PH_TEMP_COMPENSATION_CONFIG_BIT);
   }
   else
   {
-    retval = bitClear(retval, PH_TEMP_COMPENSATION_CONFIG_BIT);
+    retval = bitClear(config, PH_TEMP_COMPENSATION_CONFIG_BIT);
   }
   _write_byte(PH_CONFIG_REGISTER, retval);
 }
@@ -253,17 +252,17 @@ void pH_Probe::useTemperatureCompensation(bool b)
 void pH_Probe::useDualPoint(bool b)
 {
   byte retval;
-
-  retval = _read_byte(PH_CONFIG_REGISTER);
+  byte config = _read_byte(PH_CONFIG_REGISTER);
 
   if (b)
   {
-    retval = bitSet(retval, PH_DUALPOINT_CONFIG_BIT);
+    retval = bitSet(config, PH_DUALPOINT_CONFIG_BIT);
   }
   else
   {
-    retval = bitClear(retval, PH_DUALPOINT_CONFIG_BIT);
+    retval = bitClear(config, PH_DUALPOINT_CONFIG_BIT);
   }
+
   _write_byte(PH_CONFIG_REGISTER, retval);
   Serial.println(retval);
 }

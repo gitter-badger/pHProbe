@@ -49,7 +49,7 @@
 #define PH_CALIBRATE_READLOW_REGISTER 25  /*!< reading low calibration */
 #define PH_SOLUTION_REGISTER  29          /*!< reference pH solution */
 #define PH_TEMP_COMPENSATION_REGISTER 33  /*!< temperature compensation constant */
-#define PH_MV 34                          /*!< measured mV from pH probe */
+#define PH_MV_REGISTER 34                 /*!< measured mV from pH probe */
 #define PH_CONFIG_REGISTER 38             /*!< config register */
 #define PH_TASK_REGISTER 39               /*!< task register */
 
