@@ -268,7 +268,7 @@
 
 <table><thead>
 <tr>
-<th style="text-align: center">EC Salinity Probe</th>
+<th style="text-align: center">pH Probe Interface</th>
 <th style="text-align: center">Master device</th>
 </tr>
 </thead><tbody>
@@ -296,7 +296,7 @@
 
 <table><thead>
 <tr>
-<th style="text-align: center">EC Salinity Probe</th>
+<th style="text-align: center">pH Probe Interface</th>
 <th style="text-align: center">Temperature Probe</th>
 </tr>
 </thead><tbody>
@@ -322,11 +322,11 @@
 
 <p>If you are using PlatformIO, you can install the library using the library manager (PlatformIO / PlatformIO Home / Libraries) and search for pH Probe. Examples are included.</p>
 
-<p>On your Raspberry Pi, you can install the library with <code class="prettyprint">pip install phprobe</code>. Note, you may run into python 2/3 issues. If you get a module not found error, try installing with <code class="prettyprint">pip3 install phprobe</code> (replacing pip3 with the appropriate version if pip3 isn&rsquo;t found). You can find an example at the library&rsquo;s <a href="https://github.com/u-fire/ECSalinity-python">GitHub</a> page. To access the library, <code class="prettyprint">from ecsalinity.ecsalinity import ecsalinity</code> and <code class="prettyprint">ec = ecsalinity(i2c_device)</code>.</p>
+<p>On your Raspberry Pi, you can install the library with <code class="prettyprint">pip install phprobe</code>. Note, you may run into python 2/3 issues. If you get a module not found error, try installing with <code class="prettyprint">pip3 install phprobe</code> (replacing pip3 with the appropriate version if pip3 isn&rsquo;t found). You can find an example at the library&rsquo;s <a href="https://github.com/u-fire/ECSalinity-python">GitHub</a> page. To access the library, <code class="prettyprint">from phprobe.phprobe import phprobe</code> and <code class="prettyprint">pH = phprobe(i2c_device)</code>.</p>
 
 <h2 id="the-shell-example">The <code class="prettyprint">shell</code> Example</h2>
 
-<p>An interactive shell interface is provided with both frameworks and is a quick and easy way to get started using the device. You will find the equivalent commands in the code area to the right when applicable.</p>
+<p>An interactive shell interface is provided with both frameworks and is a quick and easy way to get started using the device. You will find the equivalent commands in the code area to the right when applicable. Upload it to your master device and start a serial terminal. You will be presented with a <code class="prettyprint">&gt;</code> prompt where you can enter commands and receive a response, similar to a shell command line or REPL. It is often quicker to experiment with things this way rather than rewriting, compiling, and uploading new versions every time.</p>
 
 <h1 id="calibration">Calibration</h1>
 
@@ -334,7 +334,7 @@
 <pre class="highlight cpp tab-cpp"><code><span class="cp">#include &lt;phProbe.h&gt;
 </span><span class="n">pH_Probe</span> <span class="n">pH</span><span class="p">;</span>
 
-<span class="n">ec</span><span class="p">.</span><span class="n">calibrateSingle</span><span class="p">(</span><span class="mf">7.0</span><span class="p">);</span>
+<span class="n">pH</span><span class="p">.</span><span class="n">calibrateSingle</span><span class="p">(</span><span class="mf">7.0</span><span class="p">);</span>
 </code></pre><pre class="highlight python tab-python"><code><span class="kn">from</span> <span class="nn">phprobe.phprobe</span> <span class="kn">import</span> <span class="n">phprobe</span>
 
 <span class="n">pH</span> <span class="o">=</span> <span class="n">phprobe</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
@@ -368,7 +368,7 @@
 </code></pre><pre class="highlight shell tab-shell"><code>  dp 1
 </code></pre>
 <p>Each call to <code class="prettyprint">measureEC</code> will use the calibration to adjust
-the reading. It can be disabled by <code class="prettyprint">ec.useDualPoint(false);</code></p>
+the reading. It can be disabled by <code class="prettyprint">pH.useDualPoint(false);</code></p>
 
 <h1 id="use">Use</h1>
 
@@ -393,6 +393,10 @@ actual temperature, pass 0xFF (255).</p>
 <p>Each individual pH measurement takes 10ms. If the default accuracy is set to 9,
 a call to <code class="prettyprint">measureEC</code> will return in about 90ms. A temperature measurement
 takes 750ms.</p>
+
+<h1 id="more-help">More Help</h1>
+
+<p>If you have any questions, find a bug, or have any suggestions on improvements, go to this project&rsquo;s <a href="https://github.com/u-fire/pHProbe">GitHub</a> page and submit an Issue or Pull Request.</p>
 
           <h1 id="summary">Summary</h1>
 
