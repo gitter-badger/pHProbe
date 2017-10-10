@@ -56,10 +56,10 @@ float pH_Probe::measurepH()
   delay(PH_PH_MEASURE_TIME);
   pH = _read_register(PH_PH_REGISTER);
 
-  // mV = _read_register(PH_MV_REGISTER) * 1000;
+  mV = _read_register(PH_MV_REGISTER) * 1000;
 
-  // pH  = round(pH * 100.0) / 100.0;
-  // pOH = abs(pH - 14);
+  pH  = round(pH * 100.0) / 100.0;
+  pOH = abs(pH - 14);
   return pH;
 }
 
