@@ -54,7 +54,7 @@
 #define PH_TASK_REGISTER 39               /*!< task register */
 
 #define PH_TEMP_MEASURE_TIME 750
-#define PH_PH_MEASURE_TIME 12000
+#define PH_PH_MEASURE_TIME 13000
 
 #define PH_DUALPOINT_CONFIG_BIT 0         /*!< dual point config bit */
 #define PH_TEMP_COMPENSATION_CONFIG_BIT 1 /*!< temperature compensation config bit */
