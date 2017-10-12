@@ -3,6 +3,8 @@
 
 ### pH Probe Interface
 
+[![Join the chat at https://gitter.im/pHProbe/Lobby](https://badges.gitter.im/pHProbe/Lobby.svg)](https://gitter.im/pHProbe/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 > Measure pH easily
 * pH
 * pOH
